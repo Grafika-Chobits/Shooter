@@ -1,0 +1,18 @@
+Kapal
+drawKapal(Frame, KoordinatKapal, OffsetLayarBawah)
+
+Tembakan
+drawTembakan(KoordinatKapal, offsetAntaraPusatKapalDenganAtasKapal)
+{Bikin garis yang bisa belok2 arahnya dan nempel ke bagian atas kapal}
+
+Peluru
+Nembak peluru pake gradien
+drawPeluru(Frame, KoordinatAsalTembakan, KoordinatAkhirTembakan)
+{Cari titik akhir peluru, jalankan}
+
+Pesawat
+drawPesawat(Frame, KoordinatPusat, OffsetAtasLayar)
+
+Ledakan
+drawLedakan(Frame, KoordinatPusatLedakan)
+{Koordinat pusat bisa berupa koordinat pusat kapal atau koordinat pusat pesawat}
