@@ -21,6 +21,10 @@
 #include <stdlib.h>
 #include <termios.h>
 
+#define min(X,Y) (((X) < (Y)) ? (X) : (Y))
+#define max(X,Y) (((X) > (Y)) ? (X) : (Y))
+
+
 /* SETTINGS ------------------------------------------------------------ */
 #define screenXstart 250
 #define screenX 1366
@@ -206,6 +210,56 @@ void showCanvas(Frame* frm, Frame* cnvs, int canvasWidth, int canvasHeight, Coor
 	}
 }
 
+void plotLine(Frame* frm, int x0, int y0, int x1, int y1, RGB lineColor)
+{
+	int dx =  abs(x1-x0), sx = x0<x1 ? 1 : -1;
+	int dy = -abs(y1-y0), sy = y0<y1 ? 1 : -1; 
+	int err = dx+dy, e2; /* error value e_xy */
+ 
+	for(;;){  /* loop */
+		insertPixel(frm, coord(x0, y0), rgb(lineColor.r, lineColor.g, lineColor.b));
+		if (x0==x1 && y0==y1) break;
+		e2 = 2*err;
+		if (e2 >= dy) { err += dy; x0 += sx; } /* e_xy+e_x > 0 */
+		if (e2 <= dx) { err += dx; y0 += sy; } /* e_xy+e_y < 0 */
+	}
+}
+
+void plotLineWidth(Frame* frm, int x0, int y0, int x1, int y1, float wd, RGB lineColor) { 
+	int dx = abs(x1-x0), sx = x0 < x1 ? 1 : -1; 
+	int dy = abs(y1-y0), sy = y0 < y1 ? 1 : -1; 
+	int err = dx-dy, e2, x2, y2;                          /* error value e_xy */
+
+	float ed = dx+dy == 0 ? 1 : sqrt((float)dx*dx+(float)dy*dy);
+
+	for (wd = (wd+1)/2; ; ) {                                   /* pixel loop */
+		insertPixel(frm, coord(x0, y0), rgb(max(0,lineColor.r*(abs(err-dx+dy)/ed-wd+1)), 
+											max(0,lineColor.g*(abs(err-dx+dy)/ed-wd+1)), 
+											max(0,lineColor.b*(abs(err-dx+dy)/ed-wd+1))));
+
+		e2 = err; x2 = x0;
+		if (2*e2 >= -dx) {                                           /* x step */
+			for (e2 += dy, y2 = y0; e2 < ed*wd && (y1 != y2 || dx > dy); e2 += dx)
+				y2 += sy;
+				insertPixel(frm, coord(x0, y2), rgb(max(0,lineColor.r*(abs(e2)/ed-wd+1)), 
+															max(0,lineColor.g*(abs(e2)/ed-wd+1)), 
+															max(0,lineColor.b*(abs(e2)/ed-wd+1)))); 
+			if (x0 == x1) break;
+			e2 = err; err -= dy; x0 += sx; 
+		} 
+		
+		if (2*e2 <= dy) {                                            /* y step */
+			for (e2 = dx-e2; e2 < ed*wd && (x1 != x2 || dx < dy); e2 += dy)
+				x2 += sx;
+				insertPixel(frm, coord(x2, y0), rgb(max(0,lineColor.r*(abs(e2)/ed-wd+1)), 
+															max(0,lineColor.g*(abs(e2)/ed-wd+1)), 
+															max(0,lineColor.b*(abs(e2)/ed-wd+1)))); 
+			if (y0 == y1) break;
+			err += dx; y0 += sy; 
+		}
+	}
+}
+
 /* MAIN FUNCTION ------------------------------------------------------- */
 int main() {	
 	/* Preparations ---------------------------------------------------- */
@@ -263,6 +317,7 @@ int main() {
 	int i; //for drawing.
 	
 	/* Main Loop ------------------------------------------------------- */
+	int zx = screenX/2 - canvasWidth/2;
 	while (loop) {
 		
 		if (mouse.x < screenX/2 - canvasWidth/2){
@@ -282,6 +337,8 @@ int main() {
 		
 		showCanvas(&cFrame, &canvas, canvasWidth, canvasHeight, canvasPosition, rgb(99,99,99));
 		
+		plotLine(&cFrame, 500, 500, 700+ zx, 600, rgb(99, 99, 99));
+		
 		//fill mouse LAST
 		insertSprite(&cFrame, getCursorCoord(&mouse), 1);
 		
@@ -292,7 +349,7 @@ int main() {
 		fread(mouseRaw,sizeof(char),3,fmouse);
 		mouse.x += mouseRaw[1];
 		mouse.y -= mouseRaw[2];
-
+		zx++;
 	}
 
 	/* Cleanup --------------------------------------------------------- */
