@@ -262,7 +262,7 @@ void plotLineWidth(Frame* frm, int x0, int y0, int x1, int y1, float wd, RGB lin
 }
 
 /* Fungsi membuat kapal */
-void drawShip(Frame *frame, Coord center, int offset, RGB color)
+void drawShip(Frame *frame, Coord center, RGB color)
 {
 	int panjangDekBawah = 100;
 	int deltaDekAtasBawah = 60;
@@ -270,17 +270,17 @@ void drawShip(Frame *frame, Coord center, int offset, RGB color)
 	int jarakKeUjung = panjangDekBawah / 2 + deltaDekAtasBawah / 2;
 	
 	//Draw Bawah Kapal
-	plotLine(frame, center.x - panjangDekBawah / 2, center.y + offset, center.x + panjangDekBawah / 2, center.y + offset, color);
+	plotLine(frame, center.x - panjangDekBawah / 2, center.y, center.x + panjangDekBawah / 2, center.y , color);
 	
 	//Draw Deck Kapal
-	plotLine(frame, center.x - jarakKeUjung, center.y + offset - height, center.x + jarakKeUjung, center.y + offset - height, color);
+	plotLine(frame, center.x - jarakKeUjung, center.y - height, center.x + jarakKeUjung, center.y - height, color);
 	
 	//Draw garis mengikuti kedua ujung garis di atas
-	plotLine(frame, center.x - panjangDekBawah / 2, center.y + offset, center.x - jarakKeUjung, center.y + offset - height, color);
-	plotLine(frame, center.x + panjangDekBawah / 2, center.y + offset, center.x + jarakKeUjung, center.y + offset - height, color);
+	plotLine(frame, center.x - panjangDekBawah / 2, center.y , center.x - jarakKeUjung, center.y - height, color);
+	plotLine(frame, center.x + panjangDekBawah / 2, center.y , center.x + jarakKeUjung, center.y - height, color);
 	
-	//Draw Cannon
-	//plotLine(frame, )
+	//Draw Cannon dengan 
+	//plotLine(frame, center.x - 10, )
 }
 	
 
@@ -363,7 +363,7 @@ int main() {
 		showCanvas(&cFrame, &canvas, canvasWidth, canvasHeight, canvasPosition, rgb(99,99,99));
 		
 		//draw ship
-		drawShip(&cFrame, coord(startKapal,230), 400, rgb(99,99,99));
+		drawShip(&cFrame, coord(startKapal,630), rgb(99,99,99));
 		startKapal--;
 		
 		plotLine(&cFrame, 500, 500, 700+ zx, 600, rgb(99, 99, 99));
