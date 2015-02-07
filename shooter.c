@@ -210,15 +210,16 @@ void showCanvas(Frame* frm, Frame* cnvs, int canvasWidth, int canvasHeight, Coor
 	}
 }
 
+/* Fungsi membuat garis */
 void plotLine(Frame* frm, int x0, int y0, int x1, int y1, RGB lineColor)
 {
 	int dx =  abs(x1-x0), sx = x0<x1 ? 1 : -1;
 	int dy = -abs(y1-y0), sy = y0<y1 ? 1 : -1; 
 	int err = dx+dy, e2; /* error value e_xy */
- 
-	for(;;){  /* loop */
+	int loop = 1;
+	while(loop){  /* loop */
 		insertPixel(frm, coord(x0, y0), rgb(lineColor.r, lineColor.g, lineColor.b));
-		if (x0==x1 && y0==y1) break;
+		if (x0==x1 && y0==y1) loop = 0;
 		e2 = 2*err;
 		if (e2 >= dy) { err += dy; x0 += sx; } /* e_xy+e_x > 0 */
 		if (e2 <= dx) { err += dx; y0 += sy; } /* e_xy+e_y < 0 */
@@ -259,6 +260,29 @@ void plotLineWidth(Frame* frm, int x0, int y0, int x1, int y1, float wd, RGB lin
 		}
 	}
 }
+
+/* Fungsi membuat kapal */
+void drawShip(Frame *frame, Coord center, int offset, RGB color)
+{
+	int panjangDekBawah = 100;
+	int deltaDekAtasBawah = 60;
+	int height = 40;
+	int jarakKeUjung = panjangDekBawah / 2 + deltaDekAtasBawah / 2;
+	
+	//Draw Bawah Kapal
+	plotLine(frame, center.x - panjangDekBawah / 2, center.y + offset, center.x + panjangDekBawah / 2, center.y + offset, color);
+	
+	//Draw Deck Kapal
+	plotLine(frame, center.x - jarakKeUjung, center.y + offset - height, center.x + jarakKeUjung, center.y + offset - height, color);
+	
+	//Draw garis mengikuti kedua ujung garis di atas
+	plotLine(frame, center.x - panjangDekBawah / 2, center.y + offset, center.x - jarakKeUjung, center.y + offset - height, color);
+	plotLine(frame, center.x + panjangDekBawah / 2, center.y + offset, center.x + jarakKeUjung, center.y + offset - height, color);
+	
+	//Draw Cannon
+	//plotLine(frame, )
+}
+	
 
 /* MAIN FUNCTION ------------------------------------------------------- */
 int main() {	
@@ -318,6 +342,7 @@ int main() {
 	
 	/* Main Loop ------------------------------------------------------- */
 	int zx = screenX/2 - canvasWidth/2;
+	int startKapal = screenX;
 	while (loop) {
 		
 		if (mouse.x < screenX/2 - canvasWidth/2){
@@ -337,6 +362,10 @@ int main() {
 		
 		showCanvas(&cFrame, &canvas, canvasWidth, canvasHeight, canvasPosition, rgb(99,99,99));
 		
+		//draw ship
+		drawShip(&cFrame, coord(startKapal,230), 400, rgb(99,99,99));
+		startKapal--;
+		
 		plotLine(&cFrame, 500, 500, 700+ zx, 600, rgb(99, 99, 99));
 		
 		//fill mouse LAST
@@ -346,7 +375,7 @@ int main() {
 		showFrame(&cFrame,&fb);
 		
 		//read next mouse
-		fread(mouseRaw,sizeof(char),3,fmouse);
+		//fread(mouseRaw,sizeof(char),3,fmouse);
 		mouse.x += mouseRaw[1];
 		mouse.y -= mouseRaw[2];
 		zx++;
