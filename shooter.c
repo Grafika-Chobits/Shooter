@@ -336,6 +336,25 @@ void drawAmmunition(Frame *frame, Coord upperBoundPosition, int ammunitionWidth,
 	}	
 }
 
+void drawPeluru(Frame *frame, Coord center, RGB color)
+{
+	int panjangPeluru = 10;
+	//DrawKiri
+	plotLine(frame, center.x - 3, center.y + panjangPeluru / 2, center.x -3, center.y - panjangPeluru / 2, color); 
+	
+	//DrawKanan
+	plotLine(frame, center.x + 3, center.y + panjangPeluru / 2, center.x + 3, center.y - panjangPeluru / 2, color);
+	
+	//DrawBawah
+	plotLine(frame, center.x - 3, center.y + panjangPeluru / 2, center.x +3, center.y + panjangPeluru / 2, color);
+	
+	//DrawUjungKiri
+	plotLine(frame, center.x - 3, center.y - panjangPeluru / 2, center.x, center.y - (panjangPeluru / 2 + 4), color);
+	
+	//DrawUjungKanan
+	plotLine(frame, center.x + 3, center.y - panjangPeluru / 2, center.x, center.y - (panjangPeluru / 2 + 4), color);
+}
+
 void drawPlane(Frame *frame, Coord position, RGB color) {
 	int X[19];
 	int Y[19];
@@ -413,12 +432,30 @@ void drawExplosion(Frame *frame, Coord loc, int mult, RGB color){
 
 void animateExplosion(Frame* frame, int explosionMul, Coord loc){
 	int explosionR, explosionG, explosionB;
-	
 	explosionR = explosionG = explosionB = 99-explosionMul*7;	
 	if(explosionR <= 0 || explosionG <= 0 || explosionB <= 0){
 		explosionR = explosionG = explosionB = 0;
 	}
 	drawExplosion(frame, loc, explosionMul, rgb(explosionR, explosionG, explosionB));
+}
+
+void drawBomb(Frame *frame, Coord center, RGB color)
+{
+	int panjangBomb = 10;
+	//DrawKiri
+	plotLine(frame, center.x - 3, center.y + panjangBomb / 2, center.x -3, center.y - panjangBomb / 2, color); 
+	
+	//DrawKanan
+	plotLine(frame, center.x + 3, center.y + panjangBomb / 2, center.x + 3, center.y - panjangBomb / 2, color);
+	
+	//DrawAtas
+	plotLine(frame, center.x - 3, center.y - panjangBomb / 2, center.x +3, center.y - panjangBomb / 2, color);
+	
+	//DrawUjungKiri
+	plotLine(frame, center.x - 3, center.y + panjangBomb / 2, center.x, center.y + (panjangBomb / 2 + 4), color);
+	
+	//DrawUjungKanan
+	plotLine(frame, center.x + 3, center.y + panjangBomb / 2, center.x, center.y + (panjangBomb / 2 + 4), color);
 }
 
 /* MAIN FUNCTION ------------------------------------------------------- */
@@ -563,8 +600,16 @@ int main() {
 			explosionMul = 0;
 		}
 		
+<<<<<<< HEAD
 		if(planeXPosition <= -170){
 			planeXPosition = canvasWidth;
+=======
+		//draw peluru
+		//drawPeluru(&cFrame, coord(screenX/2, screenY / 2), rgb(99,99,99));
+		
+		if(planeXPosition == screenX/2 - canvasWidth/2 - 165){
+			planeXPosition = screenX/2 + canvasWidth/2;
+>>>>>>> 268bcb6797216900fc1c6e6d1595aa3e1cc5f30f
 		}
 		
 		if(shipXPosition == 80){
