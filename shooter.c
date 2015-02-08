@@ -185,6 +185,33 @@ void showCanvas(Frame* frm, Frame* cnvs, int canvasWidth, int canvasHeight, Coor
 	}
 }
 
+	
+void plotCircle(Frame* frm,int xm, int ym, int r,RGB col)
+{
+   int x = -r, y = 0, err = 2-2*r; /* II. Quadrant */ 
+   do {
+      insertPixel(frm,coord(xm-x, ym+y),col); /*   I. Quadrant */
+      insertPixel(frm,coord(xm-y, ym-x),col); /*  II. Quadrant */
+      insertPixel(frm,coord(xm+x, ym-y),col); /* III. Quadrant */
+      insertPixel(frm,coord(xm+y, ym+x),col); /*  IV. Quadrant */
+      r = err;
+      if (r <= y) err += ++y*2+1;           /* e_xy+e_y < 0 */
+      if (r > x || err > y) err += ++x*2+1; /* e_xy+e_x > 0 or no 2nd y-step */
+   } while (x < 0);
+}
+
+void plotHalfCircle(Frame *frm,int xm, int ym, int r,RGB col)
+{
+   int x = -r, y = 0, err = 2-2*r; /* II. Quadrant */ 
+   do {
+      insertPixel(frm,coord(xm+x, ym-y),col); /* III. Quadrant */
+      insertPixel(frm,coord(xm+y, ym+x),col); /*  IV. Quadrant */
+      r = err;
+      if (r <= y) err += ++y*2+1;           /* e_xy+e_y < 0 */
+      if (r > x || err > y) err += ++x*2+1; /* e_xy+e_x > 0 or no 2nd y-step */
+   } while (x < 0);
+}
+
 /* Fungsi membuat garis */
 void plotLine(Frame* frm, int x0, int y0, int x1, int y1, RGB lineColor)
 {
@@ -236,6 +263,49 @@ void plotLineWidth(Frame* frm, int x0, int y0, int x1, int y1, float wd, RGB lin
 	}
 }
 
+void drawCannon(Frame* frm,Coord loc,RGB color){
+	plotLine(frm,loc.x-10,loc.y-10,loc.x-10,loc.y+30,color);
+	plotLine(frm,loc.x-10,loc.y+30,loc.x+10,loc.y+30,color);
+	plotLine(frm,loc.x+10,loc.y+30,loc.x+10,loc.y-10,color);
+	plotLine(frm,loc.x+10,loc.y-10,loc.x-10,loc.y-10,color);	
+	plotHalfCircle(frm,loc.x,loc.y-10,10,color);
+	loc.y=loc.y-20;
+	plotLine(frm,loc.x-5,loc.y-5,loc.x-5,loc.y+2,color);
+	//plotLine(loc.x-5,loc.y+5,loc.x+5,loc.y+5);
+	plotLine(frm,loc.x+5,loc.y+2,loc.x+5,loc.y-5,color);
+	plotLine(frm,loc.x+5,loc.y-5,loc.x-5,loc.y-5,color);	
+}
+
+
+void drawStickman(Frame* frm,Coord loc,int sel,RGB color,int counter){
+	plotCircle(frm,loc.x,loc.y,15,color);
+	plotLine(frm,loc.x,loc.y+15,loc.x,loc.y+50,color);
+	
+	if(counter % 2 == 0){
+		plotLine(frm,loc.x,loc.y+30,loc.x+20,loc.y+sel-3,color);
+		plotLine(frm,loc.x,loc.y+30,loc.x+25,loc.y+(sel+10)-3,color);
+	}else{
+		plotLine(frm,loc.x,loc.y+30,loc.x+20,loc.y+sel,color);
+		plotLine(frm,loc.x,loc.y+30,loc.x+25,loc.y+(sel+10),color);
+	}
+	
+	
+}
+
+void drawStickmanAndCannon(Frame *frame, Coord shipPosition, RGB color, int counter){
+	
+	if(counter % 2 == 0){
+		//Draw cannon
+		drawCannon(frame, coord(shipPosition.x, shipPosition.y - 70 - 3), rgb(99,99,99));
+	}else{
+		//Draw cannon
+		drawCannon(frame, coord(shipPosition.x, shipPosition.y - 70), rgb(99,99,99));
+	}
+		
+	//Draw stickman
+	drawStickman(frame, coord(shipPosition.x - 30, shipPosition.y - 80), 10, rgb(99,99,99),counter);
+}
+
 /* Fungsi membuat kapal */
 void drawShip(Frame *frame, Coord center, RGB color)
 {
@@ -254,15 +324,6 @@ void drawShip(Frame *frame, Coord center, RGB color)
 	plotLine(frame, center.x - panjangDekBawah / 2, center.y , center.x - jarakKeUjung, center.y - height, color);
 	plotLine(frame, center.x + panjangDekBawah / 2, center.y , center.x + jarakKeUjung, center.y - height, color);
 	
-	//Draw jendela 
-	plotLine(frame, center.x - 40, center.y - height - 12, center.x + 15, center.y - height - 12, color); //atas
-	plotLine(frame, center.x - 40, center.y - height - 12, center.x - 50, center.y - height, color); //depan
-	plotLine(frame, center.x + 15, center.y - height - 12, center.x + 15, center.y - height, color); //belakang
-	
-	//Draw Cannon
-	plotLine(frame, center.x + 40, center.y - height, center.x + 40, center.y - height - 20, color); //depan
-	plotLine(frame, center.x + 50, center.y - height, center.x + 50, center.y - height - 20, color); //belakang
-	plotLine(frame, center.x + 40, center.y - height - 20, center.x + 50, center.y - height - 20, color); //atas
 }
 
 void drawAmmunition(Frame *frame, Coord upperBoundPosition, int ammunitionWidth, int ammunitionLength, RGB color){
@@ -440,6 +501,7 @@ int main() {
 	
 	int i; //for drawing.
 	int MoveLeft = 1;
+	int stickmanCounter = 0;
 	
 	/* Main Loop ------------------------------------------------------- */
 	
@@ -456,6 +518,9 @@ int main() {
 		//draw ship
 		drawShip(&canvas, coord(shipXPosition,shipYPosition), rgb(99,99,99));
 		
+		//draw stickman and cannon
+		drawStickmanAndCannon(&canvas, coord(shipXPosition,shipYPosition), rgb(99,99,99), stickmanCounter++);
+				
 		//draw plane
 		drawPlane(&canvas, coord(planeXPosition -= planeVelocity, planeYPosition), rgb(99, 99, 99));
 					
