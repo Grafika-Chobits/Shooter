@@ -258,6 +258,16 @@ void drawShip(Frame *frame, Coord center, RGB color)
 	//plotLine(frame, center.x - 10, )
 }
 
+void drawAmmunition(Frame *frame, Coord upperBoundPosition, int ammunitionWidth, int ammunitionLength, RGB color){
+	plotLine(frame, upperBoundPosition.x, upperBoundPosition.y, upperBoundPosition.x, upperBoundPosition.y + ammunitionLength, color);
+	
+	int i;
+	for(i = 0; i < ammunitionWidth; i++){
+		plotLine(frame, upperBoundPosition.x + i, upperBoundPosition.y, upperBoundPosition.x + i, upperBoundPosition.y + ammunitionLength, color);
+		plotLine(frame, upperBoundPosition.x - i, upperBoundPosition.y, upperBoundPosition.x - i, upperBoundPosition.y + ammunitionLength, color);
+	}	
+}
+
 void drawPlane(Frame *frame, Coord position, RGB color) {
 	int X[19];
 	int Y[19];
@@ -301,7 +311,6 @@ void drawPlane(Frame *frame, Coord position, RGB color) {
 	Y[17] = Y[16] - 1;
 	Y[18] = Y[17] - 3;
 
-
 	plotLine(frame,X[0],Y[0],X[1],Y[1],color);
 	plotLine(frame,X[1],Y[1],X[2],Y[2],color);
 	plotLine(frame,X[2],Y[2],X[3],Y[3],color);
@@ -322,7 +331,27 @@ void drawPlane(Frame *frame, Coord position, RGB color) {
 	plotLine(frame,X[17],Y[17],X[18],Y[18],color);
 	plotLine(frame,X[18],Y[18],X[0],Y[0],color);
 }
+
+void drawExplosion(Frame *frame, Coord loc, int mult, RGB color){	
+	plotLine(frame,loc.x+10*mult,loc.y +10*mult,loc.x+20*mult,loc.y+20*mult,color);
+	plotLine(frame,loc.x-10*mult,loc.y -10*mult,loc.x-20*mult,loc.y-20*mult,color);
+	plotLine(frame,loc.x+10*mult,loc.y -10*mult,loc.x+20*mult,loc.y-20*mult,color);
+	plotLine(frame,loc.x-10*mult,loc.y +10*mult,loc.x-20*mult,loc.y+20*mult,color);
+	plotLine(frame,loc.x,loc.y -10*mult,loc.x,loc.y-20*mult,color);
+	plotLine(frame,loc.x-10*mult,loc.y,loc.x-20*mult,loc.y,color);
+	plotLine(frame,loc.x+10*mult,loc.y ,loc.x+20*mult,loc.y,color);
+	plotLine(frame,loc.x,loc.y +10*mult,loc.x,loc.y+20*mult,color);
+}
+
+void animateExplosion(Frame* frame, int explosionMul, Coord loc){
+	int explosionR, explosionG, explosionB;
 	
+	explosionR = explosionG = explosionB = 99-explosionMul*7;	
+	if(explosionR <= 0 || explosionG <= 0 || explosionB <= 0){
+		explosionR = explosionG = explosionB = 0;
+	}
+	drawExplosion(frame, loc, explosionMul, rgb(explosionR, explosionG, explosionB));
+}
 
 /* MAIN FUNCTION ------------------------------------------------------- */
 int main() {	
@@ -377,50 +406,107 @@ int main() {
 	int canvasWidth = 1000;
 	int canvasHeight = 500;
 	Coord canvasPosition = coord(screenX/2,screenY/2);
-	
-	Frame canvasww;
-	flushFrame(&canvasww, rgb(0,0,0));
-	
+		
 	// prepare ship
-	int velocity = 10; // velocity (pixel/ loop)
+	int shipVelocity = 5; // velocity (pixel/ loop)
+	int planeVelocity = 10;
+	
+	int shipXPosition = canvasWidth - 80;
+	int shipYPosition = 490;
+	int planeXPosition = canvasWidth;
+	int planeYPosition = 50;
+	int explosionMul = 0;
+	
+	// prepare ammunition
+	Coord firstAmmunitionCoordinate;
+	int isFirstAmmunitionReleased = 1;
+	Coord secondAmmunitionCoordinate;
+	int isSecondAmmunitionReleased = 0;
+	int ammunitionVelocity = 5;
+	int ammunitionLength = 30;
+	
+	firstAmmunitionCoordinate.x = shipXPosition;
+	firstAmmunitionCoordinate.y = shipYPosition - 40;
+	
+	secondAmmunitionCoordinate.y = shipYPosition - 40;
+	
 	
 	int i; //for drawing.
 	int MoveLeft = 1;
 	
 	/* Main Loop ------------------------------------------------------- */
 	
-	int startKapal = screenX/2 + canvasWidth/2 - 80;
-	int planeXPosition = screenX/2 + canvasWidth/2;
-	
 	while (loop) {
 		
-		//clean
+		// clean composition frame
 		flushFrame(&cFrame, rgb(33,33,33));
-		
+				
 		showCanvas(&cFrame, &canvas, canvasWidth, canvasHeight, canvasPosition, rgb(99,99,99), 1);
 		
+		// clean canvas
+		flushFrame(&canvas, rgb(0,0,0));
+		
 		//draw ship
-		drawShip(&cFrame, coord(startKapal,630), rgb(99,99,99));
+		drawShip(&canvas, coord(shipXPosition,shipYPosition), rgb(99,99,99));
 		
 		//draw plane
-		drawPlane(&cFrame, coord(planeXPosition-=5, 170), rgb(99, 99, 99));
-		
-		if(planeXPosition == screenX/2 - canvasWidth/2 - 165){
-			planeXPosition = screenX/2 + canvasWidth/2;
+		drawPlane(&canvas, coord(planeXPosition -= planeVelocity, planeYPosition), rgb(99, 99, 99));
+					
+		if(isFirstAmmunitionReleased){
+			firstAmmunitionCoordinate.y-=ammunitionVelocity;
+			
+			if(firstAmmunitionCoordinate.y <= canvasHeight/3 && !isSecondAmmunitionReleased){
+				isSecondAmmunitionReleased = 1;
+				secondAmmunitionCoordinate.x = shipXPosition;
+				secondAmmunitionCoordinate.y = shipYPosition - 40;
+			}
+			
+			if(firstAmmunitionCoordinate.y <= -ammunitionLength){
+				isFirstAmmunitionReleased = 0;
+			}
+			
+			drawAmmunition(&canvas, firstAmmunitionCoordinate, 3, ammunitionLength, rgb(99, 99, 99));
 		}
 		
-		if(startKapal <= screenX/2 - canvasWidth/2 + 80){
+		if(isSecondAmmunitionReleased){
+			secondAmmunitionCoordinate.y-=ammunitionVelocity;
+			
+			if(secondAmmunitionCoordinate.y <= canvasHeight/3 && !isFirstAmmunitionReleased){
+				isFirstAmmunitionReleased = 1;
+				firstAmmunitionCoordinate.x = shipXPosition;
+				firstAmmunitionCoordinate.y = shipYPosition - 40;
+			}
+			
+			if(secondAmmunitionCoordinate.y <= 0){
+				isSecondAmmunitionReleased = 0;
+			}
+			
+			drawAmmunition(&canvas, secondAmmunitionCoordinate, 3, ammunitionLength, rgb(99, 99, 99));
+		}
+			
+		//explosion
+		animateExplosion(&canvas, explosionMul, coord(50, 50));
+		explosionMul++;
+		if(explosionMul >= 20){
+			explosionMul = 0;
+		}
+		
+		if(planeXPosition <= -170){
+			planeXPosition = canvasWidth;
+		}
+		
+		if(shipXPosition == 80){
 			MoveLeft = 0;
 		} 
 		
-		if(startKapal == screenX/2 + canvasWidth/2 - 80){
+		if(shipXPosition == canvasWidth - 80){
 			MoveLeft = 1;
 		} 
 		
 		if(MoveLeft){
-			startKapal -= velocity;
+			shipXPosition -= shipVelocity;
 		}else{
-			startKapal += velocity;
+			shipXPosition += shipVelocity;
 		}
 		
 		//show frame
