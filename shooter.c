@@ -544,8 +544,20 @@ int main() {
 	
 	firstAmmunitionCoordinate.x = shipXPosition;
 	firstAmmunitionCoordinate.y = shipYPosition - 120;
-	
 	secondAmmunitionCoordinate.y = shipYPosition - 120;
+	
+	
+	//prepare Bomb
+	Coord firstBombCoordinate;
+	int isFirstBombReleased = 1;
+	Coord secondBombCoordinate;
+	int isSecondBombReleased = 0;
+	int bombVelocity = 10;
+	int bombLength = 20;
+	
+	firstBombCoordinate.x = planeXPosition;
+	firstBombCoordinate.y = planeYPosition + 120;
+	secondBombCoordinate.y = planeYPosition - 120;
 	
 	
 	int i; //for drawing.
@@ -575,6 +587,41 @@ int main() {
 				
 		// draw plane
 		drawPlane(&canvas, coord(planeXPosition -= planeVelocity, planeYPosition), rgb(99, 99, 99));
+		
+		// Plane Bomb
+		if(isFirstBombReleased){
+			firstBombCoordinate.y+=bombVelocity;
+			
+			if(firstBombCoordinate.y >= 2 * canvasHeight/3 && !isSecondBombReleased){
+				isSecondBombReleased = 1;
+				secondBombCoordinate.x = planeXPosition;
+				secondBombCoordinate.y = planeYPosition + 15;
+			}
+			
+			if(firstBombCoordinate.y >= screenY - ((screenY - canvasHeight)/2)){
+				isFirstBombReleased = 0;
+			}
+			
+			drawBomb(&canvas, firstBombCoordinate, rgb(99, 99, 99));
+			drawAmmunition(&canvas, firstBombCoordinate, 3, ammunitionLength, rgb(99, 99, 99));
+		}
+		
+		if(isSecondBombReleased){
+			secondBombCoordinate.y+=bombVelocity;
+			
+			if(secondBombCoordinate.y >= canvasHeight/3 && !isFirstBombReleased){
+				isFirstBombReleased = 1;
+				firstBombCoordinate.x = planeXPosition;
+				firstBombCoordinate.y = planeYPosition + 15;
+			}
+			
+			if(secondBombCoordinate.y >= screenY - 150){
+				isSecondBombReleased = 0;
+			}
+			
+			drawBomb(&canvas, secondBombCoordinate, rgb(99, 99, 99));
+			drawAmmunition(&canvas, secondBombCoordinate, 3, ammunitionLength, rgb(99, 99, 99));
+		}
 		
 		// stickman ammunition
 		if(isFirstAmmunitionReleased){
