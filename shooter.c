@@ -349,6 +349,24 @@ void drawPlane(Frame *frame, Coord position, RGB color) {
 	plotLine(frame,X[18],Y[18],X[0],Y[0],color);
 }
 	
+void drawBomb(Frame *frame, Coord center, RGB color)
+{
+	int panjangBomb = 10;
+	//DrawKiri
+	plotLine(frame, center.x - 3, center.y + panjangBomb / 2, center.x -3, center.y - panjangBomb / 2, color); 
+	
+	//DrawKanan
+	plotLine(frame, center.x + 3, center.y + panjangBomb / 2, center.x + 3, center.y - panjangBomb / 2, color);
+	
+	//DrawAtas
+	plotLine(frame, center.x - 3, center.y - panjangBomb / 2, center.x +3, center.y - panjangBomb / 2, color);
+	
+	//DrawUjungKiri
+	plotLine(frame, center.x - 3, center.y + panjangBomb / 2, center.x, center.y + (panjangBomb / 2 + 4), color);
+	
+	//DrawUjungKanan
+	plotLine(frame, center.x + 3, center.y + panjangBomb / 2, center.x, center.y + (panjangBomb / 2 + 4), color);
+}
 
 /* MAIN FUNCTION ------------------------------------------------------- */
 int main() {	
