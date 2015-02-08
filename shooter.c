@@ -185,6 +185,17 @@ void showCanvas(Frame* frm, Frame* cnvs, int canvasWidth, int canvasHeight, Coor
 	}
 }
 
+void addBlob(Frame* cnvs, Coord loc, RGB color) {
+	int x,y;
+	for (y=-2; y<3;y++) {
+		for (x=-2; x<3; x++) {
+			if (!(abs(x)==2 && abs(y)==2)) {
+				insertPixel(cnvs, coord(loc.x+x, loc.y+y), color);
+			}
+		}
+	}
+}
+
 	
 void plotCircle(Frame* frm,int xm, int ym, int r,RGB col)
 {
@@ -417,6 +428,7 @@ void drawPlane(Frame *frame, Coord position, RGB color) {
 	plotLine(frame,X[16],Y[16],X[17],Y[17],color);
 	plotLine(frame,X[17],Y[17],X[18],Y[18],color);
 	plotLine(frame,X[18],Y[18],X[0],Y[0],color);
+	//addBlob(frame, coord(position.x+170,position.y+15), rgb(255,0,0));
 }
 
 void drawExplosion(Frame *frame, Coord loc, int mult, RGB color){	
@@ -432,11 +444,11 @@ void drawExplosion(Frame *frame, Coord loc, int mult, RGB color){
 
 void animateExplosion(Frame* frame, int explosionMul, Coord loc){
 	int explosionR, explosionG, explosionB;
-	explosionR = explosionG = explosionB = 99-explosionMul*7;	
+	explosionR = explosionG = explosionB = 255-explosionMul*12;	
 	if(explosionR <= 0 || explosionG <= 0 || explosionB <= 0){
 		explosionR = explosionG = explosionB = 0;
 	}
-	drawExplosion(frame, loc, explosionMul, rgb(explosionR, explosionG, explosionB));
+	drawExplosion(frame, loc, explosionMul, rgb(explosionR, 0, 0));
 }
 
 void drawBomb(Frame *frame, Coord center, RGB color)
@@ -540,6 +552,9 @@ int main() {
 	int MoveLeft = 1;
 	int stickmanCounter = 0;
 	
+	int isXploded = 0;
+	Coord coordXplosion;
+	
 	/* Main Loop ------------------------------------------------------- */
 	
 	while (loop) {
@@ -597,10 +612,23 @@ int main() {
 		}
 			
 		//explosion
-		animateExplosion(&canvas, explosionMul, coord(50, 50));
-		explosionMul++;
-		if(explosionMul >= 20){
-			explosionMul = 0;
+		
+		if (isInBound(coord(firstAmmunitionCoordinate.x, firstAmmunitionCoordinate.y), coord(planeXPosition-5, planeYPosition-15), coord(planeXPosition+170, planeYPosition+15))) {
+			coordXplosion = firstAmmunitionCoordinate;
+			isXploded = 1;
+			//printf("boom");
+		} else if (isInBound(coord(secondAmmunitionCoordinate.x, secondAmmunitionCoordinate.y), coord(planeXPosition-5, planeYPosition-15), coord(planeXPosition+170, planeYPosition+15))) {
+			coordXplosion = secondAmmunitionCoordinate;
+			isXploded = 1;
+			//printf("boom");
+		}
+		if (isXploded == 1) {
+			animateExplosion(&canvas, explosionMul, coordXplosion);
+			explosionMul++;
+			if(explosionMul >= 20){
+				explosionMul = 0;
+				isXploded = 0;
+			}
 		}
 		
 		if(planeXPosition <= -170){
