@@ -138,34 +138,6 @@ void insertPixel(Frame* frm, Coord loc, RGB col) {
 	}
 }
 
-// Sprite Controller
-void insertSprite(Frame* frm, Coord loc, unsigned short type) {
-	switch (type) {
-		case 1 : { // the mouse sprite
-			insertPixel(frm, loc, rgb(255,255,255));
-			int i;
-			for (i=5; i<10; i++) {
-				insertPixel(frm, coord(loc.x-i, loc.y), rgb(0,0,0));
-				insertPixel(frm, coord(loc.x+i, loc.y), rgb(0,0,0));
-				insertPixel(frm, coord(loc.x, loc.y-i), rgb(0,0,0));
-				insertPixel(frm, coord(loc.x, loc.y+i), rgb(0,0,0));
-				
-				insertPixel(frm, coord(loc.x-i, loc.y+1), rgb(255,255,255));
-				insertPixel(frm, coord(loc.x-i, loc.y-1), rgb(255,255,255));
-				insertPixel(frm, coord(loc.x+i, loc.y+1), rgb(255,255,255));
-				insertPixel(frm, coord(loc.x+i, loc.y-1), rgb(255,255,255));
-				insertPixel(frm, coord(loc.x+1, loc.y-i), rgb(255,255,255));
-				insertPixel(frm, coord(loc.x-1, loc.y-i), rgb(255,255,255));
-				insertPixel(frm, coord(loc.x+1, loc.y+i), rgb(255,255,255));
-				insertPixel(frm, coord(loc.x-1, loc.y+i), rgb(255,255,255));
-			}
-		} break;
-		case 2 : { // something?
-			
-		} break;
-	}	
-}
-
 // delete contents of composition frame
 void flushFrame (Frame* frm, RGB color) {
 	int x;
@@ -192,21 +164,24 @@ void showFrame (Frame* frm, FrameBuffer* fb) {
 	}
 }
 
-void showCanvas(Frame* frm, Frame* cnvs, int canvasWidth, int canvasHeight, Coord loc, RGB borderColor) {
+void showCanvas(Frame* frm, Frame* cnvs, int canvasWidth, int canvasHeight, Coord loc, RGB borderColor, int isBorder) {
 	int x, y;
 	for (y=0; y<canvasHeight;y++) {
 		for (x=0; x<canvasWidth; x++) {
 			insertPixel(frm, coord(loc.x - canvasWidth/2 + x, loc.y - canvasHeight/2 + y), cnvs->px[x][y]);
 		}
 	}
+	
 	//show border
-	for (y=0; y<canvasHeight; y++) {
-		insertPixel(frm, coord(loc.x - canvasWidth/2 - 1, loc.y - canvasHeight/2 + y), borderColor);
-		insertPixel(frm, coord(loc.x  - canvasWidth/2 + canvasWidth, loc.y - canvasHeight/2 + y), borderColor);
-	}
-	for (x=0; x<canvasWidth; x++) {
-		insertPixel(frm, coord(loc.x - canvasWidth/2 + x, loc.y - canvasHeight/2 - 1), borderColor);
-		insertPixel(frm, coord(loc.x - canvasWidth/2 + x, loc.y - canvasHeight/2 + canvasHeight), borderColor);
+	if(isBorder){
+		for (y=0; y<canvasHeight; y++) {
+			insertPixel(frm, coord(loc.x - canvasWidth/2 - 1, loc.y - canvasHeight/2 + y), borderColor);
+			insertPixel(frm, coord(loc.x  - canvasWidth/2 + canvasWidth, loc.y - canvasHeight/2 + y), borderColor);
+		}
+		for (x=0; x<canvasWidth; x++) {
+			insertPixel(frm, coord(loc.x - canvasWidth/2 + x, loc.y - canvasHeight/2 - 1), borderColor);
+			insertPixel(frm, coord(loc.x - canvasWidth/2 + x, loc.y - canvasHeight/2 + canvasHeight), borderColor);
+		}
 	}
 }
 
@@ -289,6 +264,71 @@ void drawShip(Frame *frame, Coord center, RGB color)
 	plotLine(frame, center.x + 50, center.y - height, center.x + 50, center.y - height - 20, color); //belakang
 	plotLine(frame, center.x + 40, center.y - height - 20, center.x + 50, center.y - height - 20, color); //atas
 }
+
+void drawPlane(Frame *frame, Coord position, RGB color) {
+	int X[19];
+	int Y[19];
+	X[0] = position.x;
+	X[1] = X[0] + 15;
+	X[2] = X[1] + 30;
+	X[3] = X[2] + 13;
+	X[4] = X[3] + 13;
+	X[5] = X[4] + 13;
+	X[6] = X[5] + 13;
+	X[7] = X[6] + 50;
+	X[8] = X[7] + 5;
+	X[9] = X[8] + 10;
+	X[10] = X[9] + 3;
+	X[11] = X[10] - 1;
+	X[12] = X[11] + 1;
+	X[13] = X[12] - 67;
+	X[14] = X[13] + 13;
+	X[15] = X[14] - 10;
+	X[16] = X[15] - 17;
+	X[17] = X[16] - 37;
+	X[18] = X[17] - 27;
+
+	Y[0] = position.y;
+	Y[1] = Y[0] - 5;
+	Y[2] = Y[1] - 3;
+	Y[3] = Y[2] - 4;
+	Y[4] = Y[3] - 3;
+	Y[5] = Y[4] + 3;
+	Y[6] = Y[5] + 4;
+	Y[7] = Y[6] - 3;
+	Y[8] = Y[7] - 18;
+	Y[9] = Y[8] - 4;
+	Y[10] = Y[9] + 27;
+	Y[11] = Y[10] + 5;
+	Y[12] = Y[11] + 5;
+	Y[13] = Y[12] + 3;
+	Y[14] = Y[13] + 25;
+	Y[15] = Y[14] - 6;
+	Y[16] = Y[15] - 18;
+	Y[17] = Y[16] - 1;
+	Y[18] = Y[17] - 3;
+
+
+	plotLine(frame,X[0],Y[0],X[1],Y[1],color);
+	plotLine(frame,X[1],Y[1],X[2],Y[2],color);
+	plotLine(frame,X[2],Y[2],X[3],Y[3],color);
+	plotLine(frame,X[3],Y[3],X[4],Y[4],color);
+	plotLine(frame,X[4],Y[4],X[5],Y[5],color);
+	plotLine(frame,X[5],Y[5], X[6],Y[6],color);
+	plotLine(frame,X[6],Y[6],X[7],Y[7],color);
+	plotLine(frame,X[7],Y[7],X[8],Y[8],color);
+	plotLine(frame,X[8],Y[8],X[9],Y[9],color);
+	plotLine(frame,X[9],Y[9],X[10],Y[10],color);
+	plotLine(frame,X[10],Y[10],X[11],Y[11],color);
+	plotLine(frame,X[11],Y[11],X[12],Y[12],color);
+	plotLine(frame,X[12],Y[12],X[13],Y[13],color);
+	plotLine(frame,X[13],Y[13],X[14],Y[14],color);
+	plotLine(frame,X[14],Y[14],X[15],Y[15],color);
+	plotLine(frame,X[15],Y[15],X[16],Y[16],color);
+	plotLine(frame,X[16],Y[16],X[17],Y[17],color);
+	plotLine(frame,X[17],Y[17],X[18],Y[18],color);
+	plotLine(frame,X[18],Y[18],X[0],Y[0],color);
+}
 	
 
 /* MAIN FUNCTION ------------------------------------------------------- */
@@ -345,47 +385,54 @@ int main() {
 	int canvasHeight = 500;
 	Coord canvasPosition = coord(screenX/2,screenY/2);
 	
+	Frame canvasww;
+	flushFrame(&canvasww, rgb(0,0,0));
+	
+	// prepare ship
+	int velocity = 10; // velocity (pixel/ loop)
+	
 	int i; //for drawing.
+	int MoveLeft = 1;
 	
 	/* Main Loop ------------------------------------------------------- */
-	int zx = screenX/2 - canvasWidth/2;
-	int startKapal = screenX;
+	
+	int startKapal = screenX/2 + canvasWidth/2 - 80;
+	int planeXPosition = screenX/2 + canvasWidth/2;
+	
 	while (loop) {
-		
-		if (mouse.x < screenX/2 - canvasWidth/2){
-			mouse.x = screenX/2 - canvasWidth/2;
-		} else if (mouse.x >= screenX/2 + canvasWidth/2) {
-			mouse.x = screenX/2 + canvasWidth/2;
-		}
-		
-		if (mouse.y < screenY/2 - canvasHeight/2){
-			mouse.y = screenY/2 - canvasHeight/2;
-		} else if (mouse.y >= screenY/2 + canvasHeight/2) {
-			mouse.y = screenY/2 + canvasHeight/2;
-		}
 		
 		//clean
 		flushFrame(&cFrame, rgb(33,33,33));
 		
-		showCanvas(&cFrame, &canvas, canvasWidth, canvasHeight, canvasPosition, rgb(99,99,99));
+		showCanvas(&cFrame, &canvas, canvasWidth, canvasHeight, canvasPosition, rgb(99,99,99), 1);
 		
 		//draw ship
 		drawShip(&cFrame, coord(startKapal,630), rgb(99,99,99));
-		startKapal--;
 		
-		plotLine(&cFrame, 500, 500, 700+ zx, 600, rgb(99, 99, 99));
+		//draw plane
+		drawPlane(&cFrame, coord(planeXPosition-=5, 170), rgb(99, 99, 99));
 		
-		//fill mouse LAST
-		insertSprite(&cFrame, getCursorCoord(&mouse), 1);
+		if(planeXPosition == screenX/2 - canvasWidth/2 - 165){
+			planeXPosition = screenX/2 + canvasWidth/2;
+		}
+		
+		if(startKapal <= screenX/2 - canvasWidth/2 + 80){
+			MoveLeft = 0;
+		} 
+		
+		if(startKapal == screenX/2 + canvasWidth/2 - 80){
+			MoveLeft = 1;
+		} 
+		
+		if(MoveLeft){
+			startKapal -= velocity;
+		}else{
+			startKapal += velocity;
+		}
 		
 		//show frame
 		showFrame(&cFrame,&fb);
 		
-		//read next mouse
-		//fread(mouseRaw,sizeof(char),3,fmouse);
-		mouse.x += mouseRaw[1];
-		mouse.y -= mouseRaw[2];
-		zx++;
 	}
 
 	/* Cleanup --------------------------------------------------------- */
