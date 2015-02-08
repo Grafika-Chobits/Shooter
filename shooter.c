@@ -600,16 +600,12 @@ int main() {
 			explosionMul = 0;
 		}
 		
-<<<<<<< HEAD
 		if(planeXPosition <= -170){
 			planeXPosition = canvasWidth;
-=======
-		//draw peluru
-		//drawPeluru(&cFrame, coord(screenX/2, screenY / 2), rgb(99,99,99));
+		}
 		
 		if(planeXPosition == screenX/2 - canvasWidth/2 - 165){
 			planeXPosition = screenX/2 + canvasWidth/2;
->>>>>>> 268bcb6797216900fc1c6e6d1595aa3e1cc5f30f
 		}
 		
 		if(shipXPosition == 80){
