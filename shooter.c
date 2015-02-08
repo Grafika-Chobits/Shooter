@@ -528,12 +528,12 @@ int main() {
 	Coord secondAmmunitionCoordinate;
 	int isSecondAmmunitionReleased = 0;
 	int ammunitionVelocity = 5;
-	int ammunitionLength = 30;
+	int ammunitionLength = 20;
 	
 	firstAmmunitionCoordinate.x = shipXPosition;
-	firstAmmunitionCoordinate.y = shipYPosition - 40;
+	firstAmmunitionCoordinate.y = shipYPosition - 120;
 	
-	secondAmmunitionCoordinate.y = shipYPosition - 40;
+	secondAmmunitionCoordinate.y = shipYPosition - 120;
 	
 	
 	int i; //for drawing.
@@ -552,28 +552,30 @@ int main() {
 		// clean canvas
 		flushFrame(&canvas, rgb(0,0,0));
 		
-		//draw ship
+		// draw ship
 		drawShip(&canvas, coord(shipXPosition,shipYPosition), rgb(99,99,99));
 		
-		//draw stickman and cannon
+		// draw stickman and cannon
 		drawStickmanAndCannon(&canvas, coord(shipXPosition,shipYPosition), rgb(99,99,99), stickmanCounter++);
 				
-		//draw plane
+		// draw plane
 		drawPlane(&canvas, coord(planeXPosition -= planeVelocity, planeYPosition), rgb(99, 99, 99));
-					
+		
+		// stickman ammunition
 		if(isFirstAmmunitionReleased){
 			firstAmmunitionCoordinate.y-=ammunitionVelocity;
 			
 			if(firstAmmunitionCoordinate.y <= canvasHeight/3 && !isSecondAmmunitionReleased){
 				isSecondAmmunitionReleased = 1;
 				secondAmmunitionCoordinate.x = shipXPosition;
-				secondAmmunitionCoordinate.y = shipYPosition - 40;
+				secondAmmunitionCoordinate.y = shipYPosition - 120;
 			}
 			
 			if(firstAmmunitionCoordinate.y <= -ammunitionLength){
 				isFirstAmmunitionReleased = 0;
 			}
 			
+			drawPeluru(&canvas, firstAmmunitionCoordinate, rgb(99, 99, 99));
 			drawAmmunition(&canvas, firstAmmunitionCoordinate, 3, ammunitionLength, rgb(99, 99, 99));
 		}
 		
@@ -583,13 +585,14 @@ int main() {
 			if(secondAmmunitionCoordinate.y <= canvasHeight/3 && !isFirstAmmunitionReleased){
 				isFirstAmmunitionReleased = 1;
 				firstAmmunitionCoordinate.x = shipXPosition;
-				firstAmmunitionCoordinate.y = shipYPosition - 40;
+				firstAmmunitionCoordinate.y = shipYPosition - 120;
 			}
 			
 			if(secondAmmunitionCoordinate.y <= 0){
 				isSecondAmmunitionReleased = 0;
 			}
 			
+			drawPeluru(&canvas, secondAmmunitionCoordinate, rgb(99, 99, 99));
 			drawAmmunition(&canvas, secondAmmunitionCoordinate, 3, ammunitionLength, rgb(99, 99, 99));
 		}
 			
