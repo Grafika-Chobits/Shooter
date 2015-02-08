@@ -659,13 +659,21 @@ int main() {
 		}
 			
 		//explosion
-		
 		if (isInBound(coord(firstAmmunitionCoordinate.x, firstAmmunitionCoordinate.y), coord(planeXPosition-5, planeYPosition-15), coord(planeXPosition+170, planeYPosition+15))) {
 			coordXplosion = firstAmmunitionCoordinate;
 			isXploded = 1;
 			//printf("boom");
 		} else if (isInBound(coord(secondAmmunitionCoordinate.x, secondAmmunitionCoordinate.y), coord(planeXPosition-5, planeYPosition-15), coord(planeXPosition+170, planeYPosition+15))) {
 			coordXplosion = secondAmmunitionCoordinate;
+			isXploded = 1;
+			//printf("boom");
+		}
+		else if (isInBound(coord(firstBombCoordinate.x, firstBombCoordinate.y), coord(shipXPosition-50, shipYPosition-100), coord(shipXPosition+50, shipYPosition+30))) {
+			coordXplosion = firstBombCoordinate;
+			isXploded = 1;
+			//printf("boom");
+		} else if (isInBound(coord(secondBombCoordinate.x, secondBombCoordinate.y), coord(shipXPosition-50, shipYPosition-100), coord(shipXPosition+50, shipYPosition+30))) {
+			coordXplosion = secondBombCoordinate;
 			isXploded = 1;
 			//printf("boom");
 		}
