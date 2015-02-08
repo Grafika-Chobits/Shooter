@@ -338,14 +338,19 @@ int main() {
 	int canvasHeight = 500;
 	Coord canvasPosition = coord(screenX/2,screenY/2);
 	
+	// prepare ship
+	int velocity = 10; // velocity (pixel/ loop)
+	
 	int i; //for drawing.
+	int MoveLeft = 1;
 	
 	/* Main Loop ------------------------------------------------------- */
-	int zx = screenX/2 - canvasWidth/2;
-	int startKapal = screenX;
+	
+	int startKapal = screenX/2 + canvasWidth/2 - 80;
+	
 	while (loop) {
 		
-		if (mouse.x < screenX/2 - canvasWidth/2){
+		/*if (mouse.x < screenX/2 - canvasWidth/2){
 			mouse.x = screenX/2 - canvasWidth/2;
 		} else if (mouse.x >= screenX/2 + canvasWidth/2) {
 			mouse.x = screenX/2 + canvasWidth/2;
@@ -355,7 +360,7 @@ int main() {
 			mouse.y = screenY/2 - canvasHeight/2;
 		} else if (mouse.y >= screenY/2 + canvasHeight/2) {
 			mouse.y = screenY/2 + canvasHeight/2;
-		}
+		}*/
 		
 		//clean
 		flushFrame(&cFrame, rgb(33,33,33));
@@ -364,21 +369,32 @@ int main() {
 		
 		//draw ship
 		drawShip(&cFrame, coord(startKapal,630), rgb(99,99,99));
-		startKapal--;
+		if(startKapal == screenX/2 - canvasWidth/2 + 80){
+			MoveLeft = 0;
+		} 
 		
-		plotLine(&cFrame, 500, 500, 700+ zx, 600, rgb(99, 99, 99));
+		if(startKapal == screenX/2 + canvasWidth/2 - 80){
+			MoveLeft = 1;
+		} 
 		
+		if(MoveLeft){
+			startKapal -= velocity;
+		}else{
+			startKapal += velocity;
+		}
+		
+				
 		//fill mouse LAST
-		insertSprite(&cFrame, getCursorCoord(&mouse), 1);
+		//insertSprite(&cFrame, getCursorCoord(&mouse), 1);
 		
 		//show frame
 		showFrame(&cFrame,&fb);
 		
 		//read next mouse
 		//fread(mouseRaw,sizeof(char),3,fmouse);
-		mouse.x += mouseRaw[1];
-		mouse.y -= mouseRaw[2];
-		zx++;
+		//mouse.x += mouseRaw[1];
+		//mouse.y -= mouseRaw[2];
+		
 	}
 
 	/* Cleanup --------------------------------------------------------- */
