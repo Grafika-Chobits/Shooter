@@ -241,7 +241,7 @@ void drawShip(Frame *frame, Coord center, RGB color)
 {
 	int panjangDekBawah = 100;
 	int deltaDekAtasBawah = 60;
-	int height = 40;
+	int height = 30;
 	int jarakKeUjung = panjangDekBawah / 2 + deltaDekAtasBawah / 2;
 	
 	//Draw Bawah Kapal
@@ -254,8 +254,15 @@ void drawShip(Frame *frame, Coord center, RGB color)
 	plotLine(frame, center.x - panjangDekBawah / 2, center.y , center.x - jarakKeUjung, center.y - height, color);
 	plotLine(frame, center.x + panjangDekBawah / 2, center.y , center.x + jarakKeUjung, center.y - height, color);
 	
-	//Draw Cannon dengan 
-	//plotLine(frame, center.x - 10, )
+	//Draw jendela 
+	plotLine(frame, center.x - 40, center.y - height - 12, center.x + 15, center.y - height - 12, color); //atas
+	plotLine(frame, center.x - 40, center.y - height - 12, center.x - 50, center.y - height, color); //depan
+	plotLine(frame, center.x + 15, center.y - height - 12, center.x + 15, center.y - height, color); //belakang
+	
+	//Draw Cannon
+	plotLine(frame, center.x + 40, center.y - height, center.x + 40, center.y - height - 20, color); //depan
+	plotLine(frame, center.x + 50, center.y - height, center.x + 50, center.y - height - 20, color); //belakang
+	plotLine(frame, center.x + 40, center.y - height - 20, center.x + 50, center.y - height - 20, color); //atas
 }
 
 void drawAmmunition(Frame *frame, Coord upperBoundPosition, int ammunitionWidth, int ammunitionLength, RGB color){
