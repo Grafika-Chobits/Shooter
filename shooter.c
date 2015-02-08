@@ -265,6 +265,25 @@ void drawShip(Frame *frame, Coord center, RGB color)
 	plotLine(frame, center.x + 40, center.y - height - 20, center.x + 50, center.y - height - 20, color); //atas
 }
 
+void drawPeluru(Frame *frame, Coord center, RGB color)
+{
+	int panjangPeluru = 10;
+	//DrawKiri
+	plotLine(frame, center.x - 3, center.y + panjangPeluru / 2, center.x -3, center.y - panjangPeluru / 2, color); 
+	
+	//DrawKanan
+	plotLine(frame, center.x + 3, center.y + panjangPeluru / 2, center.x + 3, center.y - panjangPeluru / 2, color);
+	
+	//DrawBawah
+	plotLine(frame, center.x - 3, center.y + panjangPeluru / 2, center.x +3, center.y + panjangPeluru / 2, color);
+	
+	//DrawUjungKiri
+	plotLine(frame, center.x - 3, center.y - panjangPeluru / 2, center.x, center.y - (panjangPeluru / 2 + 4), color);
+	
+	//DrawUjungKanan
+	plotLine(frame, center.x + 3, center.y - panjangPeluru / 2, center.x, center.y - (panjangPeluru / 2 + 4), color);
+}
+
 void drawPlane(Frame *frame, Coord position, RGB color) {
 	int X[19];
 	int Y[19];
@@ -411,6 +430,9 @@ int main() {
 		
 		//draw plane
 		drawPlane(&cFrame, coord(planeXPosition-=5, 170), rgb(99, 99, 99));
+		
+		//draw peluru
+		//drawPeluru(&cFrame, coord(screenX/2, screenY / 2), rgb(99,99,99));
 		
 		if(planeXPosition == screenX/2 - canvasWidth/2 - 165){
 			planeXPosition = screenX/2 + canvasWidth/2;
