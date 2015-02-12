@@ -19,6 +19,11 @@ class Color {
 			g = 0;
 			b = 0;
 		}
+		
+		bool isEqual(Color a)
+		{
+			return (this->r == a.getR() && this->g == a.getG() && this->b == a.getB());
+		}
 
 		unsigned char getR(){
 			return r;
