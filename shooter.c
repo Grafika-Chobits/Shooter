@@ -273,6 +273,27 @@ void plotLineWidth(Frame* frm, int x0, int y0, int x1, int y1, float wd, RGB lin
 		}
 	}
 }
+int isColorEqual(RGB color1, RGB color2)
+{
+if (color1.r == color2.r && color1.g == color2.g && color1.b == color2.b){return 1;}
+else {return 0;}
+}
+
+
+void colorCannon(Frame* frm,int x, int y,RGB color){
+	
+	
+if (isColorEqual(frm->px[x][y],color)==1){
+	} 
+else{
+	insertPixel(frm,coord(x,y),color);
+	colorCannon(frm,x+1,y,color);
+	colorCannon(frm,x,y+1,color);
+	colorCannon(frm,x-1,y,color);
+	colorCannon(frm,x,y-1,color);
+	}	
+}
+
 
 void drawCannon(Frame* frm,Coord loc,RGB color){
 	plotLine(frm,loc.x-10,loc.y-10,loc.x-10,loc.y+30,color);
@@ -284,7 +305,8 @@ void drawCannon(Frame* frm,Coord loc,RGB color){
 	plotLine(frm,loc.x-5,loc.y-5,loc.x-5,loc.y+2,color);
 	//plotLine(loc.x-5,loc.y+5,loc.x+5,loc.y+5);
 	plotLine(frm,loc.x+5,loc.y+2,loc.x+5,loc.y-5,color);
-	plotLine(frm,loc.x+5,loc.y-5,loc.x-5,loc.y-5,color);	
+	plotLine(frm,loc.x+5,loc.y-5,loc.x-5,loc.y-5,color);
+	colorCannon(frm,loc.x+2,loc.y+2,color);	
 }
 
 
@@ -569,6 +591,7 @@ int main() {
 	
 	/* Main Loop ------------------------------------------------------- */
 	
+
 	while (loop) {
 		
 		// clean composition frame
@@ -587,6 +610,7 @@ int main() {
 				
 		// draw plane
 		drawPlane(&canvas, coord(planeXPosition -= planeVelocity, planeYPosition), rgb(99, 99, 99));
+		
 		
 		// Plane Bomb
 		if(isFirstBombReleased){
@@ -706,7 +730,7 @@ int main() {
 			shipXPosition -= shipVelocity;
 		}else{
 			shipXPosition += shipVelocity;
-		}
+		}	
 		
 		//show frame
 		showFrame(&cFrame,&fb);
